@@ -6,8 +6,10 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth"; // Correct imports
 import { auth, provider } from "../firebase"; // Import auth and provider directly from your firebase file
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
@@ -27,6 +29,7 @@ const LoginPage = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
         console.log("User signed up:", result.user);
+        navigate("/upload");
         // You can redirect or store the user in state/context
       })
       .catch((error) => {
@@ -38,7 +41,7 @@ const LoginPage = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         console.log("User logged in with Google:", result.user);
-        // You can redirect or store the user in state/context
+        navigate("/upload");
       })
       .catch((error) => {
         console.error("Google login error:", error.message);
