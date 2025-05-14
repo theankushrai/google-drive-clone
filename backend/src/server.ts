@@ -10,13 +10,18 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+// CORS
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// Manually handle OPTIONS requests (CORS preflight)
+app.options("*", cors());
 
 const upload = multer({ dest: "uploads/" });
 
@@ -55,8 +60,8 @@ app.post(
       const dbParams = {
         TableName: process.env.AWS_DYNAMODB_TABLE_NAME!,
         Item: {
-          userId: "demo-user", // <-- Required partition key (must match table definition)
-          fileId, // <-- Can be your sort key if needed
+          userId: "demo-user",
+          fileId,
           originalName: req.file.originalname,
           mimeType: req.file.mimetype,
           size: req.file.size,
@@ -67,7 +72,6 @@ app.post(
       };
 
       await dynamoDb.put(dbParams).promise();
-
       res.json({ message: "File uploaded!", fileUrl: s3Data.Location });
     } catch (err) {
       console.error("Upload error:", err);
@@ -76,6 +80,65 @@ app.post(
   }
 );
 
+app.get("/files", async (req: Request, res: Response) => {
+  const dbParams = {
+    TableName: process.env.AWS_DYNAMODB_TABLE_NAME!,
+    KeyConditionExpression: "userId = :uid",
+    ExpressionAttributeValues: {
+      ":uid": "demo-user",
+    },
+  };
+
+  try {
+    const data = await dynamoDb.query(dbParams).promise();
+    res.json({ files: data.Items });
+  } catch (err) {
+    console.error("Fetch error:", err);
+    res.status(500).send("Failed to fetch files.");
+  }
+});
+
+app.delete(
+  "/delete/:fileId",
+  async (
+    req: express.Request<{ fileId: string }>,
+    res: express.Response
+  ): Promise<void> => {
+    const { fileId } = req.params;
+    if (!fileId) {
+      res.status(400).send("File ID is required");
+      return;
+    }
+
+    try {
+      const dbParams = {
+        TableName: process.env.AWS_DYNAMODB_TABLE_NAME!,
+        Key: {
+          userId: "demo-user",
+          fileId,
+        },
+      };
+
+      const fileData = await dynamoDb.get(dbParams).promise();
+      if (!fileData.Item) {
+        res.status(404).send("File not found");
+        return;
+      }
+
+      const s3Params = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: fileData.Item.s3Key,
+      };
+      await s3.deleteObject(s3Params).promise();
+      await dynamoDb.delete(dbParams).promise();
+
+      res.status(200).send("File deleted successfully.");
+    } catch (err) {
+      console.error("Delete error:", err);
+      res.status(500).send("Failed to delete file.");
+    }
+  }
+);
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
 });
