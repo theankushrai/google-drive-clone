@@ -1,53 +1,86 @@
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Google Drive clone built with React, TypeScript, Node.js, and AWS S3 with user-specific file management.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔐 User Authentication with Firebase
+- 📤 File Upload with progress tracking
+- 📂 File organization by user
+- 🗑️ Secure file deletion
+- 🔍 File listing with metadata
+- 🔄 Real-time updates (coming soon)
+- 🔗 File sharing (coming soon)
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React, TypeScript, Vite, React Bootstrap
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: AWS DynamoDB
+- **Storage**: AWS S3
+- **Authentication**: Firebase Authentication
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Getting Started
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Prerequisites
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Node.js 16+ and npm 8+
+- AWS Account with S3 and DynamoDB access
+- Firebase project for authentication
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/google-drive-clone.git
+   cd google-drive-clone
+   ```
+
+2. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install backend dependencies**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+4. **Set up environment variables**
+   - Copy `.env.example` to `.env` in both root and backend directories
+   - Update the values with your configuration
+
+5. **Set up Firebase Admin**
+   - Download your Firebase Admin SDK private key
+   - Save it as `serviceAccountKey.json` in the backend directory
+
+### Running the Application
+
+1. **Start the backend server**
+   ```bash
+   cd backend
+   npm run dev
+   ```
+
+2. **Start the frontend development server** (in a new terminal)
+   ```bash
+   npm run dev
+   ```
+
+3. Open your browser to `http://localhost:5173`
+
+## Environment Variables
+
+### Frontend (`.env` in root)
+
+```env
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_bucket.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
     ...reactDom.configs.recommended.rules,
   },
 })
