@@ -1,87 +1,170 @@
-# React + TypeScript + Vite
+# 🌐 Google Drive Clone 🚀
+A full-stack file storage solution with real-time sync and secure cloud storage
 
-A Google Drive clone built with React, TypeScript, Node.js, and AWS S3 with user-specific file management.
+---
 
-## Features
+## 📖 Overview
 
-- 🔐 User Authentication with Firebase
-- 📤 File Upload with progress tracking
-- 📂 File organization by user
-- 🗑️ Secure file deletion
-- 🔍 File listing with metadata
-- 🔄 Real-time updates (coming soon)
-- 🔗 File sharing (coming soon)
+This project is a **MERN stack** (MongoDB (DynamoDB), Express, React, Node.js) application that replicates core Google Drive functionality. It allows users to securely upload, store, manage, and share files with a clean, intuitive interface. Built with modern web technologies and best practices in mind.
 
-## Tech Stack
+---
 
-- **Frontend**: React, TypeScript, Vite, React Bootstrap
-- **Backend**: Node.js, Express, TypeScript
-- **Database**: AWS DynamoDB
-- **Storage**: AWS S3
-- **Authentication**: Firebase Authentication
+## ✨ Features
 
-## Getting Started
+- 🔐 **Secure Authentication**
+  - Email/Password signup & login
+  - Google OAuth integration
+  - Protected routes and JWT-based sessions
+
+- ☁️ **File Management**
+  - Upload multiple files
+  - Preview images and documents
+  - Download files with one click
+  - Delete files securely
+  - Real-time file listing
+
+- 🎨 **Modern UI/UX**
+  - Responsive design
+  - Drag & drop uploads
+  - File type icons
+  - Progress indicators
+  - Toast notifications
+
+- ⚡ **Performance**
+  - Optimized file uploads
+  - Lazy loading
+  - Efficient state management
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- ⚛️ React 18 with TypeScript
+- 🔄 React Router v6
+- 🔥 Firebase Authentication
+- 🎨 React Bootstrap & custom CSS
+- 📦 Vite for fast development
+
+### Backend
+- 🚀 Node.js with Express
+- 🔑 JWT Authentication
+- 📦 AWS S3 for file storage
+- 🗄️ MongoDB with Mongoose
+- 🐳 Docker support
+
+### DevOps
+- 🔄 GitHub Actions for CI/CD
+- 📦 Docker containerization
+- 🔒 Environment-based configuration
+- 📊 Logging and monitoring
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-
-- Node.js 16+ and npm 8+
-- AWS Account with S3 and DynamoDB access
-- Firebase project for authentication
+- Node.js 16+
+- MongoDB Atlas account
+- AWS S3 bucket
+- Firebase project
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/google-drive-clone.git
+   git clone https://github.com/your-username/google-drive-clone.git
    cd google-drive-clone
    ```
 
-2. **Install frontend dependencies**
+2. **Install dependencies**
    ```bash
+   # Install root dependencies
+   npm install
+   
+   # Install frontend dependencies
+   cd frontend
+   npm install
+   
+   # Install backend dependencies
+   cd ../backend
    npm install
    ```
 
-3. **Install backend dependencies**
+3. **Environment Setup**
+   - Copy `.env.example` to `.env` in both frontend and backend
+   - Update with your configuration
+
+4. **Run the application**
    ```bash
+   # Start backend
    cd backend
-   npm install
-   ```
+   npm run dev
 
-4. **Set up environment variables**
-   - Copy `.env.example` to `.env` in both root and backend directories
-   - Update the values with your configuration
-
-5. **Set up Firebase Admin**
-   - Download your Firebase Admin SDK private key
-   - Save it as `serviceAccountKey.json` in the backend directory
-
-### Running the Application
-
-1. **Start the backend server**
-   ```bash
-   cd backend
+   # In a new terminal, start frontend
+   cd frontend
    npm run dev
    ```
 
-2. **Start the frontend development server** (in a new terminal)
-   ```bash
-   npm run dev
-   ```
+### Docker Setup
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
 
-3. Open your browser to `http://localhost:5173`
-
-## Environment Variables
-
-### Frontend (`.env` in root)
-
-```env
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_bucket.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-    ...reactDom.configs.recommended.rules,
-  },
-})
+# Or run in detached mode
+docker-compose up -d
 ```
+
+---
+
+## 📸 Screenshots
+
+![Login Page](screenshots/login.png)
+*Secure authentication with email/password or Google*
+
+![Dashboard](screenshots/dashboard.png)
+*Clean interface to manage your files*
+
+![File Upload](screenshots/upload.png)
+*Drag and drop file uploads with progress*
+
+---
+
+## 🎯 Features in Detail
+
+### Authentication
+- Secure JWT-based authentication
+- Social login with Google
+- Protected routes
+- Session management
+
+### File Operations
+- Upload multiple files
+- Preview images and PDFs
+- Download files
+- Delete files
+- View file details
+
+### User Experience
+- Responsive design
+- Loading states
+- Error handling
+- Toast notifications
+
+### Performance
+- Optimized file uploads
+- Lazy loading
+- Code splitting
+- Efficient state management
+
+---
+## 🌐 View My Profiles
+
+Check out more of my work and connect with me online:  
+👉 [https://linktr.ee/your-link](https://linktr.ee/theankushrai)
+
+Includes:
+- GitHub  
+- LeetCode  
+- GeeksForGeeks  
+- LinkedIn
