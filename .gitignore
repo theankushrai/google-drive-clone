@@ -1,12 +1,3 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
 # Dependencies
 node_modules
 
@@ -21,7 +12,7 @@ build
 !.env.example
 
 # Firebase and service account keys
-serviceAccountKey.json
+FirebaseServiceAccountKey.json
 *.key.json
 
 # Editor directories and files
@@ -55,3 +46,8 @@ Thumbs.db
 # Local env files
 .env.local
 .env.*.local
+
+python-backend/venv
+
+#documentation
+/Documentation/todo.md
