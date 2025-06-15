@@ -1,120 +1,79 @@
-// src/pages/SignupPage.js
+// src/pages/SignupPage.jsx
 import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, googleProvider } from '../services/firebase';
-import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
-  // This function is called when the user submits the signup form
-  // It prevents the default behaviour of the form (which is to send a request to the server)
-  // and instead creates a new user account using Firebase
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!validateForm()) return;
-    
-    if (password !== confirmPassword) {
+
+    if (password !== passwordConfirm) {
       return setError('Passwords do not match');
     }
 
     try {
       setError('');
       setLoading(true);
-      await createUserWithEmailAndPassword(auth, email, password);
+      await signup(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Failed to create an account: ' + err.message);
+      console.error('Failed to create an account', err);
+      setError('Failed to create an account: ' + (err.message || 'Please try again'));
     }
     setLoading(false);
   }
-
-  async function handleGoogleSignUp() {
-    try {
-      setError('');
-      setLoading(true);
-      await signInWithPopup(auth, googleProvider);
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Failed to sign up with Google: ' + err.message);
-    }
-    setLoading(false);
-  }
-
-  const validateForm = () => {
-    if (!email) {
-      setError('Email is required');
-      return false;
-    }
-    if (!password) {
-      setError('Password is required');
-      return false;
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return false;
-    }
-    return true;
-  };
-
-
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
-      <div className="w-100" style={{ maxWidth: "400px" }}>
-        <Card>
+    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
+      <div className="w-100" style={{ maxWidth: '400px' }}>
+        <Card className="shadow">
           <Card.Body>
             <h2 className="text-center mb-4">Sign Up</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group id="email" className="mb-3">
                 <Form.Label>Email</Form.Label>
-                <Form.Control 
-                  type="email" 
-                  required 
+                <Form.Control
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </Form.Group>
               <Form.Group id="password" className="mb-3">
                 <Form.Label>Password</Form.Label>
-                <Form.Control 
-                  type="password" 
-                  required 
+                <Form.Control
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </Form.Group>
-              <Form.Group id="confirm-password" className="mb-3">
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control 
-                  type="password" 
-                  required 
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+              <Form.Group id="password-confirm" className="mb-3">
+                <Form.Label>Password Confirmation</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  required
                 />
               </Form.Group>
-              <Button disabled={loading} className="w-100 mb-3" type="submit">
-                Sign Up
-              </Button>
-              <Button 
-                variant="outline-primary" 
-                className="w-100 mb-3" 
-                onClick={handleGoogleSignUp}
-                disabled={loading}
-              >
-                Sign up with Google
+              <Button disabled={loading} className="w-100" type="submit">
+                {loading ? 'Creating Account...' : 'Sign Up'}
               </Button>
             </Form>
           </Card.Body>
         </Card>
-        <div className="w-100 text-center mt-2">
+        <div className="w-100 text-center mt-3">
           Already have an account? <Link to="/login">Log In</Link>
         </div>
       </div>

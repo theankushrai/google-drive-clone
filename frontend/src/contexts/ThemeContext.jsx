@@ -1,63 +1,68 @@
+// src/contexts/ThemeContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// 1. Create the Context (a central store of information that can be accessed by components)
+// Create a context called ThemeContext
 const ThemeContext = createContext();
 
-// 2. Create a custom hook to easily use the theme context
-// This hook will throw an error if useTheme is used outside of a ThemeProvider
+// A hook to access the theme state from any component
 export const useTheme = () => {
+  // Get the theme state and functions from the context
   const context = useContext(ThemeContext);
+
+  // If the component is not wrapped with ThemeProvider, throw an error
   if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
+
+  // Return the theme state and functions
   return context;
 };
 
-// 3. Create the ThemeProvider component
-// This component will wrap the entire application and provide the theme context
+// The provider component that wraps the app
 export const ThemeProvider = ({ children }) => {
-  // State to store the current theme (light or dark)
+  // Initialize the theme state with 'light' as default
   const [theme, setTheme] = useState('light');
 
-  // Effect to apply the theme class to the body tag
-  // This will allow us to style the app based on the theme
+  // Update the body class name when theme changes
   useEffect(() => {
+    // Set the body class name to the current theme
     document.body.className = `${theme}-mode`;
   }, [theme]);
 
-  // Effect to load the saved theme from local storage or detect the system preference
+  // Load the saved theme from local storage when the app mounts
   useEffect(() => {
-    // Try to load the saved theme from local storage
     const savedTheme = localStorage.getItem('app-theme');
     if (savedTheme) {
+      // Set the theme state to the saved theme
       setTheme(savedTheme);
-    } else {
-      // If no saved theme, detect the system preference
-      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(isDarkMode ? 'dark' : 'light');
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      // If the user prefers dark mode, set the theme to 'dark'
+      setTheme('dark');
     }
   }, []);
 
-  // Function to toggle between light and dark theme
+  // A function to toggle the theme
   const toggleTheme = () => {
+    // Update the theme state to the opposite of the current theme
     setTheme(prevTheme => {
+      const newTheme = prevTheme === 'light' ? 'dark' : 'light';
       // Save the new theme to local storage
-      localStorage.setItem('app-theme', prevTheme === 'light' ? 'dark' : 'light');
-      // Return the new theme
-      return prevTheme === 'light' ? 'dark' : 'light';
+      localStorage.setItem('app-theme', newTheme);
+      return newTheme;
     });
   };
 
-  // Create the value object that will be passed to the context provider
-  // This object contains the current theme, a boolean indicating if we are in dark mode, and the toggle function
+  // The value object that will be passed to the context provider
   const value = {
+    // The current theme
     theme,
+    // A boolean indicating if the current theme is dark
     isDarkMode: theme === 'dark',
+    // The function to toggle the theme
     toggleTheme,
   };
 
-  // Return the ThemeContext.Provider component
-  // This component will wrap the entire application and provide the theme context
+  // Wrap the app with the context provider
   return (
     <ThemeContext.Provider value={value}>
       {children}

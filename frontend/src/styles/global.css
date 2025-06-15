@@ -1,0 +1,57 @@
+/* src/styles/global.css */
+:root {
+    /* Light Theme Colors */
+    --color-text: #212529;
+    --color-background: #f8f9fa;
+    --color-surface: #ffffff;
+    --color-border: #dee2e6;
+    --navbar-bg: #ffffff;
+    --card-bg: #ffffff;
+  }
+  
+  .dark-mode {
+    /* Dark Theme Colors */
+    --color-text: #e9ecef;
+    --color-background: #212529;
+    --color-surface: #343a40;
+    --color-border: #495057;
+    --navbar-bg: #212529;
+    --card-bg: #343a40;
+  }
+  
+  /* Base Styles */
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Navbar Styles */
+  .navbar {
+    background-color: var(--navbar-bg) !important;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  /* Card Styles */
+  .card {
+    background-color: var(--card-bg) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+    transition: all 0.3s ease;
+  }
+  
+  /* Form Controls */
+  .form-control {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+  }
+  
+  /* Buttons */
+  .btn-primary {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+  }
