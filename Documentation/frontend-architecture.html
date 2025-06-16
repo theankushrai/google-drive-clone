@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Architecture - Google Drive Clone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            padding: 20px;
+        }
+        .component {
+            cursor: pointer;
+            padding: 10px 15px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        .component:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .component.core { border-left: 4px solid #0d6efd; }
+        .component.nav { border-left: 4px solid #198754; }
+        .component.auth { border-left: 4px solid #dc3545; }
+        .component.page { border-left: 4px solid #6f42c1; }
+        .component.context { border-left: 4px solid #fd7e14; }
+        
+        #component-details {
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            min-height: 200px;
+        }
+        
+        .flow-arrow {
+            position: relative;
+            height: 20px;
+            width: 20px;
+            margin: 5px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .flow-arrow::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-right: 2px solid #6c757d;
+            border-bottom: 2px solid #6c757d;
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+        }
+        
+        .flow-horizontal .flow-arrow {
+            transform: rotate(90deg);
+            margin: 0 10px;
+        }
+        
+        .flow-group .flow-arrow::after {
+            border-color: #6c757d;
+        }
+        
+        .flow-horizontal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .flow-horizontal::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 0;
+        }
+        
+        .flow-horizontal > * {
+            position: relative;
+            z-index: 1;
+            background: white;
+            padding: 0 5px;
+        }
+        
+        .flow-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .flow-vertical > .flow-arrow {
+            position: relative;
+        }
+        
+        .flow-vertical > .flow-arrow::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+        
+        .flow-group {
+            margin: 20px 10px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            min-width: 200px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .flow-group:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .flow-group-title {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin: -10px -10px 10px -10px;
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        @media (max-width: 768px) {
+            .flow-horizontal {
+                flex-direction: column;
+            }
+            .flow-arrow::after {
+                content: '';
+                display: block;
+                margin: 0 10px;
+                transform: rotate(45deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Frontend Architecture</h1>
+        <p class="lead">Google Drive Clone - Interactive Component Flow</p>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="flow-vertical">
+                    <div class="component core" onclick="showDetails('main')">main.jsx</div>
+                    <div class="flow-arrow"></div>
+                    <div class="component core" onclick="showDetails('app')">App.jsx</div>
+                    
+                    <div class="flow-horizontal">
+                        <div class="flow-group">
+                            <div class="flow-group-title">Theme</div>
+                            <div class="component context" onclick="showDetails('themeprovider')">ThemeProvider</div>
+                        </div>
+                        
+                        <div class="flow-group">
+                            <div class="flow-group-title">Router</div>
+                            <div class="component core" onclick="showDetails('router')">Router</div>
+                            <div class="flow-arrow"></div>
+                            <div class="component auth" onclick="showDetails('authprovider')">AuthProvider</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-arrow"></div>
+                    <div class="component core" onclick="showDetails('routes')">Routes</div>
+                    
+                    <div class="flow-vertical">
+                        <div class="component core" onclick="showDetails('layout')">Layout</div>
+                        
+                        <div class="flow-horizontal">
+                            <div class="flow-group">
+                                <div class="flow-group-title">Navigation</div>
+                                <div class="component nav" onclick="showDetails('navigation')">Navigation</div>
+                                <div class="component nav" onclick="showDetails('themetoggle')">Theme Toggle</div>
+                                <div class="component nav" onclick="showDetails('authbuttons')">Auth Buttons</div>
+                            </div>
+                            
+                            <div class="flow-group">
+                                <div class="flow-group-title">Content</div>
+                                <div class="component core" onclick="showDetails('outlet')">Outlet</div>
+                                
+                                <div class="flow-horizontal">
+                                    <div class="flow-group">
+                                        <div class="flow-group-title">Public</div>
+                                        <div class="component page" onclick="showDetails('loginpage')">LoginPage</div>
+                                        <div class="component page" onclick="showDetails('signuppage')">SignupPage</div>
+                                    </div>
+                                    
+                                    <div class="flow-group">
+                                        <div class="flow-group-title">Protected</div>
+                                        <div class="component auth" onclick="showDetails('privateroute')">PrivateRoute</div>
+                                        <div class="component page" onclick="showDetails('dashboardpage')">DashboardPage</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h3>Context Providers</h3>
+                    <div class="flow-horizontal">
+                        <div class="flow-group">
+                            <div class="component context" onclick="showDetails('authcontext')">AuthContext</div>
+                            <div class="component page" onclick="showDetails('loginpage')">→ LoginPage</div>
+                            <div class="component page" onclick="showDetails('signuppage')">→ SignupPage</div>
+                            <div class="component auth" onclick="showDetails('privateroute')">→ PrivateRoute</div>
+                        </div>
+                        
+                        <div class="flow-group">
+                            <div class="component context" onclick="showDetails('themecontext')">ThemeContext</div>
+                            <div class="component nav" onclick="showDetails('navigation')">→ Navigation</div>
+                            <div class="component core" onclick="showDetails('app')">→ App</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="h5 mb-0">Component Details</h3>
+                    </div>
+                    <div class="card-body" id="component-details">
+                        <p class="text-muted">Click on any component to see details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Component data
+        const components = {
+            'main': {
+                name: 'main.jsx',
+                location: 'frontend/src/main.jsx',
+                filePath: 'frontend/src/main.jsx',
+                description: 'Application entry point',
+                features: [
+                    'Renders the root React component',
+                    'Wraps the app in StrictMode',
+                    'Mounts to the DOM element with id "root"',
+                    'Initializes the React application'
+                ]
+            },
+            'app': {
+                name: 'App.jsx',
+                location: 'frontend/src/App.jsx',
+                filePath: 'frontend/src/App.jsx',
+                description: 'Root component that sets up the application',
+                features: [
+                    'Configures routing with React Router',
+                    'Wraps the app in ThemeProvider and AuthProvider',
+                    'Defines the main layout structure',
+                    'Handles public and private routes'
+                ]
+            },
+            'themeprovider': {
+                name: 'ThemeProvider',
+                location: 'frontend/src/contexts/ThemeContext.jsx',
+                filePath: 'frontend/src/contexts/ThemeContext.jsx',
+                description: 'Manages application theme state',
+                features: [
+                    'Provides theme context to all child components',
+                    'Manages light/dark theme state',
+                    'Persists theme preference in localStorage',
+                    'Applies theme classes to the document body'
+                ]
+            },
+            'router': {
+                name: 'Router',
+                location: 'react-router-dom',
+                description: 'Client-side routing',
+                features: [
+                    'Enables navigation between views',
+                    'Manages browser history',
+                    'Synchronizes UI with URL',
+                    'Supports nested routes'
+                ]
+            },
+            'authprovider': {
+                name: 'AuthProvider',
+                location: 'frontend/src/contexts/AuthContext.jsx',
+                filePath: 'frontend/src/contexts/AuthContext.jsx',
+                description: 'Manages authentication state',
+                features: [
+                    'Tracks user authentication state',
+                    'Provides authentication methods',
+                    'Handles user session',
+                    'Protects routes based on auth status'
+                ]
+            },
+            'routes': {
+                name: 'Routes',
+                location: 'react-router-dom',
+                description: 'Route configuration',
+                features: [
+                    'Defines all application routes',
+                    'Renders the first matching route',
+                    'Supports nested routes',
+                    'Handles 404 routes'
+                ]
+            },
+            'layout': {
+                name: 'Layout',
+                location: 'frontend/src/App.jsx',
+                filePath: 'frontend/src/App.jsx',
+                description: 'Main layout wrapper',
+                features: [
+                    'Provides consistent page structure',
+                    'Contains the Navigation component',
+                    'Renders child routes via Outlet',
+                    'Includes a footer with copyright information'
+                ]
+            },
+            'navigation': {
+                name: 'Navigation',
+                location: 'frontend/src/components/Navigation.jsx',
+                filePath: 'frontend/src/components/Navigation.jsx',
+                description: 'Main navigation bar',
+                features: [
+                    'Responsive design for all screen sizes',
+                    'Conditional rendering based on auth state',
+                    'Includes theme toggle',
+                    'Shows login/logout buttons'
+                ]
+            },
+            'outlet': {
+                name: 'Outlet',
+                location: 'react-router-dom',
+                description: 'Renders child route elements',
+                features: [
+                    'Acts as a placeholder for child routes',
+                    'Allows nested UI to show up when child routes are rendered',
+                    'Used by parent route elements'
+                ]
+            },
+            'loginpage': {
+                name: 'LoginPage',
+                location: 'frontend/src/pages/LoginPage.jsx',
+                filePath: 'frontend/src/pages/LoginPage.jsx',
+                description: 'User authentication page',
+                features: [
+                    'Email/password login form',
+                    'Google Sign-In integration',
+                    'Form validation',
+                    'Error handling',
+                    'Link to signup page'
+                ]
+            },
+            'signuppage': {
+                name: 'SignupPage',
+                location: 'frontend/src/pages/SignupPage.jsx',
+                filePath: 'frontend/src/pages/SignupPage.jsx',
+                description: 'User registration page',
+                features: [
+                    'New user registration form',
+                    'Password confirmation',
+                    'Form validation',
+                    'Error handling',
+                    'Link to login page'
+                ]
+            },
+            'privateroute': {
+                name: 'PrivateRoute',
+                location: 'frontend/src/components/PrivateRoute.jsx',
+                filePath: 'frontend/src/components/PrivateRoute.jsx',
+                description: 'Route protection component',
+                features: [
+                    'Protects routes from unauthorized access',
+                    'Redirects unauthenticated users to login',
+                    'Preserves intended destination',
+                    'Integrates with AuthContext'
+                ]
+            },
+            'dashboardpage': {
+                name: 'DashboardPage',
+                location: 'frontend/src/pages/DashboardPage.jsx',
+                filePath: 'frontend/src/pages/DashboardPage.jsx',
+                description: 'Main application dashboard',
+                features: [
+                    'Protected route (requires authentication)',
+                    'Main user interface after login',
+                    'Placeholder for file management',
+                    'Future: Will display user files and folders'
+                ]
+            },
+            'themetoggle': {
+                name: 'Theme Toggle',
+                location: 'Part of Navigation',
+                description: 'Theme switching control',
+                features: [
+                    'Toggles between light and dark themes',
+                    'Persists user preference',
+                    'Visual indicator of current theme',
+                    'Accessible controls'
+                ]
+            },
+            'authbuttons': {
+                name: 'Auth Buttons',
+                location: 'Part of Navigation',
+                description: 'Authentication controls',
+                features: [
+                    'Conditionally renders login/signup or logout',
+                    'Changes based on authentication state',
+                    'Provides clear call-to-action',
+                    'Responsive design'
+                ]
+            },
+            'authcontext': {
+                name: 'AuthContext',
+                location: 'frontend/src/contexts/AuthContext.jsx',
+                filePath: 'frontend/src/contexts/AuthContext.jsx',
+                description: 'Authentication context',
+                features: [
+                    'Manages user authentication state',
+                    'Provides login/logout methods',
+                    'Tracks current user',
+                    'Used by components to check auth status'
+                ]
+            },
+            'themecontext': {
+                name: 'ThemeContext',
+                location: 'frontend/src/contexts/ThemeContext.jsx',
+                filePath: 'frontend/src/contexts/ThemeContext.jsx',
+                description: 'Theme management context',
+                features: [
+                    'Manages theme state (light/dark)',
+                    'Provides theme toggle function',
+                    'Persists theme preference',
+                    'Notifies components of theme changes'
+                ]
+            }
+        };
+
+        // Show component details when a component is clicked
+        function showDetails(componentId) {
+            const detailsDiv = document.getElementById('component-details');
+            const component = components[componentId];
+            
+            if (!component) {
+                detailsDiv.innerHTML = '<p class="text-muted">No details available for this component.</p>';
+                return;
+            }
+            
+            let featuresHtml = component.features.map(feature => 
+                `<li class="mb-1">${feature}</li>`
+            ).join('');
+            
+            // Create a clickable link to the source file
+            const webPath = component.filePath ? component.filePath.replace('frontend/', '') : '';
+            const fullPath = component.filePath ? 
+                `../${component.filePath}` : ''; // Go up from Documentation to root, then into frontend
+                
+            const sourceLink = component.filePath ? 
+                `<a href="${fullPath}" target="_blank" class="text-decoration-none" 
+                   title="Open source file in default application">
+                    <i class="bi bi-file-code me-1"></i>${webPath}
+                </a>` : 
+                component.location;
+            
+            detailsDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <h4 class="mb-3">${component.name}</h4>
+                    ${component.filePath ? `
+                        <a href="vscode://file/${encodeURI('c:\\Time Machine\\workspace\\google-drive-clone\\' + component.filePath.replace(/\//g, '\\'))}" 
+                           class="btn btn-sm btn-outline-primary" 
+                           title="Open in VS Code">
+                            <i class="bi bi-code-square me-1"></i>Open in Editor
+                        </a>` : ''
+                    }
+                </div>
+                <p class="text-muted mb-2">
+                    <small>${sourceLink}</small>
+                </p>
+                <p class="mb-3">${component.description}</p>
+                <h5>Features:</h5>
+                <ul class="mb-0">
+                    ${featuresHtml}
+                </ul>
+            `;
+            
+            // Highlight the selected component
+            document.querySelectorAll('.component').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Initialize with first component
+        document.addEventListener('DOMContentLoaded', () => {
+            showDetails('main');
+        });
+    </script>
+</body>
+</html>

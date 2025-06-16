@@ -11,13 +11,14 @@ import DashboardPage from './pages/DashboardPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/global.css';
 
-// Layout component that includes Navigation and Outlet
+// For any of the pages listed inside me,
+// I want them to use the Layout component as their overall design
 function Layout() {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navigation />
       <main className="flex-grow-1 py-4">
-        <Outlet />
+        <Outlet /> {/* Outlet is a special component that allows us to render child routes. in short allow to render pages . this is a placeholder */}
       </main>
       <footer className="py-3">
         <div className="container text-center">

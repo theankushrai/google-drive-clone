@@ -1,14 +1,14 @@
 // src/pages/SignupPage.jsx
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Button, Alert, Container, Card } from "react-bootstrap";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -17,24 +17,29 @@ export default function SignupPage() {
     e.preventDefault();
 
     if (password !== passwordConfirm) {
-      return setError('Passwords do not match');
+      return setError("Passwords do not match");
     }
 
     try {
-      setError('');
+      setError("");
       setLoading(true);
       await signup(email, password);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      console.error('Failed to create an account', err);
-      setError('Failed to create an account: ' + (err.message || 'Please try again'));
+      console.error("Failed to create an account", err);
+      setError(
+        "Failed to create an account: " + (err.message || "Please try again")
+      );
     }
     setLoading(false);
   }
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '80vh' }}>
-      <div className="w-100" style={{ maxWidth: '400px' }}>
+    <Container
+      className="d-flex align-items-center justify-content-center"
+      style={{ minHeight: "80vh" }}
+    >
+      <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card className="shadow">
           <Card.Body>
             <h2 className="text-center mb-4">Sign Up</h2>
@@ -68,7 +73,7 @@ export default function SignupPage() {
                 />
               </Form.Group>
               <Button disabled={loading} className="w-100" type="submit">
-                {loading ? 'Creating Account...' : 'Sign Up'}
+                {loading ? "Creating Account..." : "Sign Up"}
               </Button>
             </Form>
           </Card.Body>
