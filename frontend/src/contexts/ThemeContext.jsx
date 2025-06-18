@@ -1,7 +1,7 @@
 // src/contexts/ThemeContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const ThemeContext = createContext();
+export const ThemeContext = createContext();
 
 /**
  * Custom hook to access the theme context.
