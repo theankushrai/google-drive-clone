@@ -47,7 +47,6 @@ Thumbs.db
 .env.local
 .env.*.local
 
-python-backend/venv
-
 #documentation
 /Documentation/todo.md
+/backend/venv
