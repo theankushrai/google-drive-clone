@@ -1,6 +1,11 @@
+import os
+import json
+import firebase_admin
+from functools import wraps
+from flask import request, jsonify
+from firebase_admin import credentials, auth
 
 # Authorization: Bearer <token>
-
 # Authorization:: The standard HTTP header name for sending credentials.
 # Bearer: The type of authentication; means "whoever has this token is allowed access."
 # <token>: The actual credential, typically a JWT (e.g., from Firebase). It's a three-part coded string containing info (like user ID) and a cryptographic signature to prevent tampering, verifying its source.
@@ -9,37 +14,57 @@
 
 def init_firebase():
     """Initialize Firebase Admin SDK"""
-    # Check if the Firebase Admin SDK has not been initialized yet
     if not firebase_admin._apps:
-        # Load the Firebase service account credentials from the environment variable
-        cred = credentials.Certificate(os.getenv('FIREBASE_CREDENTIALS_PATH'))
-        # Initialize the Firebase Admin SDK with the credentials
-        firebase_admin.initialize_app(cred)
+        firebase_creds = os.getenv('FIREBASE_CREDENTIALS')
+        
+        if not firebase_creds:
+            raise ValueError("FIREBASE_CREDENTIALS environment variable not set")
+            
+        try:
+            # Try to load as JSON string first
+            try:
+                cred_dict = json.loads(firebase_creds)
+            except json.JSONDecodeError:
+                # If that fails, try to load from file path
+                if os.path.exists(firebase_creds):
+                    with open(firebase_creds, 'r') as f:
+                        cred_dict = json.load(f)
+                else:
+                    raise ValueError(f"FIREBASE_CREDENTIALS is not valid JSON and path does not exist: {firebase_creds}")
+            
+            # Initialize Firebase with the credentials
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+            print("Firebase Admin SDK initialized successfully")
+            
+        except Exception as e:
+            print(f"Error initializing Firebase: {str(e)}")
+            print(f"FIREBASE_CREDENTIALS value: {firebase_creds[:100]}..." if firebase_creds else "No FIREBASE_CREDENTIALS set")
+            raise
 
 def token_required(f):
     """Decorator to verify Firebase ID token"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Get the Authorization header from the request
+        # Skip token verification for OPTIONS requests (CORS preflight)
+        if request.method == 'OPTIONS':
+            return f(*args, **kwargs)
+            
         auth_header = request.headers.get('Authorization')
         
-        # Check if the Authorization header is empty or doesn't start with 'Bearer '
         if not auth_header or not auth_header.startswith('Bearer '):
-            # Return a 401 Unauthorized response with an error message
-            return jsonify({'error': 'No token provided'}), 401
+            return jsonify({'error': 'Missing or invalid Authorization header'}), 401
             
-        # Extract the token from the Authorization header
         token = auth_header.split(' ')[1]
         
         try:
-            # Verify the Firebase ID token
+            # Verify the ID token
             decoded_token = auth.verify_id_token(token)
-            # Set the user attribute on the request object with the decoded token
-            request.user = decoded_token
-        except Exception as e:
-            # Return a 403 Forbidden response with an error message if the token is invalid
-            return jsonify({'error': 'Invalid token'}), 403
+            # Store the decoded token in the request object for later use
+            request.decoded_token = decoded_token
+            return f(*args, **kwargs)
             
-        # Call the decorated function with the original arguments and keyword arguments
-        return f(*args, **kwargs)
+        except Exception as e:
+            return jsonify({'error': 'Invalid token', 'details': str(e)}), 401
+            
     return decorated_function
