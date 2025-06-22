@@ -58,9 +58,21 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  const logout = async () => {
+    try {
+      await auth.signOut();
+      setCurrentUser(null);
+      localStorage.removeItem('token');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
+  };
+
   const value = {
     currentUser,
     loading,
+    logout,
     // Add a method to refresh the token when needed
     refreshToken: async () => {
       if (auth.currentUser) {
