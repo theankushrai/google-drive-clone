@@ -111,4 +111,19 @@ export const getPresignedUrl = async (fileName, fileType) => {
   }
 };
 
+/**
+ * Get all files for the current user
+ * @returns {Promise<Array>} - Array of file objects
+ */
+export const getUserFiles = async () => {
+  try {
+    const response = await api.get('/files');
+    // The backend returns the files array directly, not in a 'files' property
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    console.error('Error fetching user files:', error);
+    throw error;
+  }
+};
+
 export default api;

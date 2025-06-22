@@ -51,7 +51,9 @@ Thumbs.db
 /Documentation/todo.md
 /backend/venv
 
-/backend/__pycache__
+__pycache__/
+*.pyc
 /backend/*.log
 /backend/*.pid
 /backend/*.pypackage
+/backend/venv
