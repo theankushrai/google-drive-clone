@@ -8,12 +8,74 @@ import {
   Alert, 
   Table, 
   Spinner, 
-  Button 
+  Button,
+  Image 
 } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import { ThemeContext } from "../contexts/ThemeContext";
 import FileUpload from "../components/FileUpload";
 import { getUserFiles } from "../services/api";
+import { 
+  FaFilePdf, 
+  FaFileWord, 
+  FaFileExcel, 
+  FaFilePowerpoint, 
+  FaFileImage, 
+  FaFileAudio, 
+  FaFileVideo, 
+  FaFileArchive,
+  FaFileCode,
+  FaFileAlt
+} from 'react-icons/fa';
+
+// Map file extensions to icons
+const getFileIcon = (filename) => {
+  const extension = filename.split('.').pop().toLowerCase();
+  
+  // Image files
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+  if (imageExtensions.includes(extension)) {
+    return <FaFileImage className="text-primary" />;
+  }
+  
+  // Document files
+  const docExtensions = ['doc', 'docx'];
+  if (docExtensions.includes(extension)) {
+    return <FaFileWord className="text-primary" />;
+  }
+  
+  // PDF files
+  if (extension === 'pdf') {
+    return <FaFilePdf className="text-danger" />;
+  }
+  
+  // Spreadsheet files
+  const excelExtensions = ['xls', 'xlsx', 'csv'];
+  if (excelExtensions.includes(extension)) {
+    return <FaFileExcel className="text-success" />;
+  }
+  
+  // Presentation files
+  const pptExtensions = ['ppt', 'pptx'];
+  if (pptExtensions.includes(extension)) {
+    return <FaFilePowerpoint className="text-warning" />;
+  }
+  
+  // Archive files
+  const archiveExtensions = ['zip', 'rar', '7z', 'tar', 'gz'];
+  if (archiveExtensions.includes(extension)) {
+    return <FaFileArchive className="text-secondary" />;
+  }
+  
+  // Code files
+  const codeExtensions = ['js', 'jsx', 'ts', 'tsx', 'py', 'java', 'c', 'cpp', 'h', 'hpp', 'html', 'css', 'scss', 'json'];
+  if (codeExtensions.includes(extension)) {
+    return <FaFileCode className="text-info" />;
+  }
+  
+  // Default file icon
+  return <FaFileAlt className="text-secondary" />;
+};
 
 // Format file size to human-readable format
 const formatFileSize = (bytes) => {
@@ -29,20 +91,29 @@ const getFileType = (filename) => {
   return filename.split(".").pop().toUpperCase();
 };
 
-const FileRow = ({ file, isDarkMode }) => (
-  <tr>
-    <td className={isDarkMode ? "text-light" : "text-dark"}>{file.filename}</td>
-    <td className={isDarkMode ? "text-light" : "text-dark"}>
-      {formatFileSize(file.size)}
-    </td>
-    <td className={isDarkMode ? "text-light" : "text-dark"}>
-      {getFileType(file.filename)}
-    </td>
-    <td className={isDarkMode ? "text-light" : "text-dark"}>
-      {new Date(file.uploadedAt).toLocaleString()}
-    </td>
-  </tr>
-);
+const FileRow = ({ file, isDarkMode }) => {
+  const fileIcon = getFileIcon(file.filename);
+  
+  return (
+    <tr>
+      <td className={`d-flex align-items-center ${isDarkMode ? 'text-light' : 'text-dark'}`}>
+        <span className="me-2" style={{ fontSize: '1.2rem' }}>
+          {fileIcon}
+        </span>
+        {file.filename}
+      </td>
+      <td className={isDarkMode ? "text-light" : "text-dark"}>
+        {formatFileSize(file.size)}
+      </td>
+      <td className={isDarkMode ? "text-light" : "text-dark"}>
+        {getFileType(file.filename).toUpperCase()}
+      </td>
+      <td className={isDarkMode ? "text-light" : "text-dark"}>
+        {new Date(file.uploadedAt).toLocaleString()}
+      </td>
+    </tr>
+  );
+};
 
 const DashboardPage = () => {
   const { currentUser } = useAuth();
