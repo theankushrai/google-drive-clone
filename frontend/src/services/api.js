@@ -131,6 +131,26 @@ export const getUserFiles = async () => {
  * @param {string} fileId - The ID of the file to delete
  * @returns {Promise<Object>} - The delete response
  */
+/**
+ * Get a pre-signed URL for downloading a file
+ * @param {string} fileId - The ID of the file to download
+ * @returns {Promise<Object>} - The download URL and file info
+ */
+export const getFileDownloadUrl = async (fileId) => {
+  try {
+    const response = await api.get(`/files/${fileId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting download URL:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a file
+ * @param {string} fileId - The ID of the file to delete
+ * @returns {Promise<Object>} - The delete response
+ */
 export const deleteFile = async (fileId) => {
   try {
     const response = await api.delete(`/files/${fileId}`);

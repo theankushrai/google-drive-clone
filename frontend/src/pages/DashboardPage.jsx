@@ -15,7 +15,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { ThemeContext } from "../contexts/ThemeContext";
 import FileUpload from "../components/FileUpload";
-import { getUserFiles, deleteFile } from "../services/api";
+import { getUserFiles, deleteFile, getFileDownloadUrl } from "../services/api";
 import { 
   FaFilePdf, 
   FaFileWord, 
@@ -27,7 +27,8 @@ import {
   FaFileArchive,
   FaFileCode,
   FaFileAlt,
-  FaTrash
+  FaTrash,
+  FaDownload,
 } from 'react-icons/fa';
 
 // Map file extensions to icons
@@ -97,9 +98,31 @@ const FileRow = ({ file, isDarkMode, onDelete }) => {
   const fileIcon = getFileIcon(file.filename);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   
   const handleDeleteClick = () => setShowDeleteModal(true);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
+  
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+      // Get a fresh pre-signed URL for the file
+      const { url, filename } = await getFileDownloadUrl(file.fileId);
+      
+      // Create a temporary anchor element to trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename || file.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      // You might want to show an error toast/notification here
+    } finally {
+      setIsDownloading(false);
+    }
+  };
   
   const handleConfirmDelete = async () => {
     try {
@@ -132,18 +155,36 @@ const FileRow = ({ file, isDarkMode, onDelete }) => {
           {new Date(file.uploadedAt).toLocaleString()}
         </td>
         <td className="text-end">
-          <Button 
-            variant="outline-danger" 
-            size="sm" 
-            onClick={handleDeleteClick}
-            disabled={isDeleting}
-          >
-            {isDeleting ? (
-              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            ) : (
-              <FaTrash />
-            )}
-          </Button>
+          <div className="d-flex justify-content-end gap-2">
+            <Button 
+              variant="outline-primary" 
+              size="sm" 
+              onClick={handleDownload}
+              disabled={isDownloading}
+              title="Download file"
+              className="d-flex align-items-center"
+            >
+              {isDownloading ? (
+                <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              ) : (
+                <FaDownload />
+              )}
+            </Button>
+            <Button 
+              variant="outline-danger" 
+              size="sm" 
+              onClick={handleDeleteClick}
+              disabled={isDeleting}
+              title="Delete file"
+              className="d-flex align-items-center"
+            >
+              {isDeleting ? (
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              ) : (
+                <FaTrash />
+              )}
+            </Button>
+          </div>
         </td>
       </tr>
       
