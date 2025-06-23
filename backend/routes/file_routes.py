@@ -139,19 +139,17 @@ def list_files():
         current_app.logger.error(f"Error listing files: {str(e)}")
         return jsonify({'error': 'Failed to list files'}), 500
 
-@file_bp.route('/<file_id>', methods=['GET'])
+@file_bp.route('/<string:file_id>', methods=['GET'])
 @token_required
 def get_file(file_id):
     """
     Generate a pre-signed URL for downloading a file
     """
     try:
-        # Get user ID from the Firebase token
-        token = request.headers.get('Authorization').split('Bearer ')[1]
-        decoded_token = auth.verify_id_token(token)
-        user_id = decoded_token['uid']
+        # Get user ID from the token
+        user_id = request.decoded_token['uid']
         
-        # Get file metadata from DynamoDB
+        # Query the file metadata from DynamoDB
         response = table.get_item(
             Key={
                 'userId': user_id,
@@ -159,30 +157,99 @@ def get_file(file_id):
             }
         )
         
-        item = response.get('Item')
-        if not item:
-            return jsonify({'error': 'File not found'}), 404
+        if 'Item' not in response:
+            return jsonify({'error': 'File not found or access denied'}), 404
+            
+        file_item = response['Item']
         
         # Generate a pre-signed URL for the file
-        presigned_url = s3_client.generate_presigned_url(
-            'get_object',
-            Params={
-                'Bucket': get_s3_bucket_name(),
-                'Key': item['s3Key'],
-                'ResponseContentDisposition': f'attachment; filename="{item["filename"]}"'
-            },
-            ExpiresIn=3600  # URL expires in 1 hour
+        bucket_name = get_s3_bucket_name()
+        s3_key = f"{user_id}/{file_id}/{file_item['filename']}"
+        
+        try:
+            # Check if file exists and user has permission
+            s3_client.head_object(Bucket=bucket_name, Key=s3_key)
+            
+            # Generate pre-signed URL (valid for 1 hour)
+            presigned_url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={
+                    'Bucket': bucket_name,
+                    'Key': s3_key,
+                    'ResponseContentDisposition': f'attachment; filename="{file_item["filename"]}"'
+                },
+                ExpiresIn=3600
+            )
+            
+            return jsonify({
+                'url': presigned_url,
+                'filename': file_item['filename'],
+                'contentType': file_item.get('contentType', 'application/octet-stream')
+            })
+            
+        except ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                return jsonify({'error': 'File not found in storage'}), 404
+            raise
+            
+    except Exception as e:
+        current_app.logger.error(f"Error generating download URL: {str(e)}")
+        return jsonify({'error': 'Failed to generate download URL'}), 500
+
+@file_bp.route('/<string:file_id>', methods=['DELETE'])
+@token_required
+def delete_file(file_id):
+    """
+    Delete a file and its metadata
+    """
+    try:
+        # Get user ID from the token
+        user_id = request.decoded_token['uid']
+        
+        # First, get the file metadata to get the filename
+        response = table.get_item(
+            Key={
+                'userId': user_id,
+                'fileId': file_id
+            }
         )
         
-        return jsonify({
-            'url': presigned_url,
-            'filename': item['filename'],
-            'contentType': item.get('contentType', 'application/octet-stream')
-        })
+        if 'Item' not in response:
+            return jsonify({'error': 'File not found or access denied'}), 404
+            
+        file_item = response['Item']
         
-    except ClientError as e:
-        current_app.logger.error(f"S3 error: {str(e)}")
-        return jsonify({'error': 'Failed to generate download URL'}), 500
+        # Delete from S3
+        bucket_name = get_s3_bucket_name()
+        s3_key = f"{user_id}/{file_id}/{file_item['filename']}"
+        
+        try:
+            # Delete the file from S3
+            s3_client.delete_object(Bucket=bucket_name, Key=s3_key)
+            
+            # Delete the metadata from DynamoDB
+            table.delete_item(
+                Key={
+                    'userId': user_id,
+                    'fileId': file_id
+                }
+            )
+            
+            return jsonify({'message': 'File deleted successfully'})
+            
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'NoSuchKey':
+                # File doesn't exist in S3, but we'll still delete the metadata
+                current_app.logger.warning(f"File {file_id} not found in S3, but deleting metadata")
+                table.delete_item(
+                    Key={
+                        'userId': user_id,
+                        'fileId': file_id
+                    }
+                )
+                return jsonify({'message': 'File metadata deleted (file not found in storage)'})
+            raise
+            
     except Exception as e:
-        current_app.logger.error(f"Error getting file: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.error(f"Error deleting file: {str(e)}")
+        return jsonify({'error': 'Failed to delete file'}), 500

@@ -126,4 +126,19 @@ export const getUserFiles = async () => {
   }
 };
 
+/**
+ * Delete a file
+ * @param {string} fileId - The ID of the file to delete
+ * @returns {Promise<Object>} - The delete response
+ */
+export const deleteFile = async (fileId) => {
+  try {
+    const response = await api.delete(`/files/${fileId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    throw error;
+  }
+};
+
 export default api;

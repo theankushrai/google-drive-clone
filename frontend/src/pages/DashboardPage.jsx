@@ -9,12 +9,13 @@ import {
   Table, 
   Spinner, 
   Button,
-  Image 
+  Image,
+  Modal
 } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import { ThemeContext } from "../contexts/ThemeContext";
 import FileUpload from "../components/FileUpload";
-import { getUserFiles } from "../services/api";
+import { getUserFiles, deleteFile } from "../services/api";
 import { 
   FaFilePdf, 
   FaFileWord, 
@@ -25,7 +26,8 @@ import {
   FaFileVideo, 
   FaFileArchive,
   FaFileCode,
-  FaFileAlt
+  FaFileAlt,
+  FaTrash
 } from 'react-icons/fa';
 
 // Map file extensions to icons
@@ -91,27 +93,78 @@ const getFileType = (filename) => {
   return filename.split(".").pop().toUpperCase();
 };
 
-const FileRow = ({ file, isDarkMode }) => {
+const FileRow = ({ file, isDarkMode, onDelete }) => {
   const fileIcon = getFileIcon(file.filename);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const handleDeleteClick = () => setShowDeleteModal(true);
+  const handleCloseDeleteModal = () => setShowDeleteModal(false);
+  
+  const handleConfirmDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await onDelete(file.fileId);
+      handleCloseDeleteModal();
+    } catch (error) {
+      console.error('Error deleting file:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   
   return (
-    <tr>
-      <td className={`d-flex align-items-center ${isDarkMode ? 'text-light' : 'text-dark'}`}>
-        <span className="me-2" style={{ fontSize: '1.2rem' }}>
-          {fileIcon}
-        </span>
-        {file.filename}
-      </td>
-      <td className={isDarkMode ? "text-light" : "text-dark"}>
-        {formatFileSize(file.size)}
-      </td>
-      <td className={isDarkMode ? "text-light" : "text-dark"}>
-        {getFileType(file.filename).toUpperCase()}
-      </td>
-      <td className={isDarkMode ? "text-light" : "text-dark"}>
-        {new Date(file.uploadedAt).toLocaleString()}
-      </td>
-    </tr>
+    <>
+      <tr>
+        <td className={`d-flex align-items-center ${isDarkMode ? 'text-light' : 'text-dark'}`}>
+          <span className="me-2" style={{ fontSize: '1.2rem' }}>
+            {fileIcon}
+          </span>
+          {file.filename}
+        </td>
+        <td className={isDarkMode ? "text-light" : "text-dark"}>
+          {formatFileSize(file.size)}
+        </td>
+        <td className={isDarkMode ? "text-light" : "text-dark"}>
+          {getFileType(file.filename).toUpperCase()}
+        </td>
+        <td className={isDarkMode ? "text-light" : "text-dark"}>
+          {new Date(file.uploadedAt).toLocaleString()}
+        </td>
+        <td className="text-end">
+          <Button 
+            variant="outline-danger" 
+            size="sm" 
+            onClick={handleDeleteClick}
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            ) : (
+              <FaTrash />
+            )}
+          </Button>
+        </td>
+      </tr>
+      
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+        <Modal.Header closeButton className={isDarkMode ? 'bg-dark text-light border-secondary' : 'bg-white text-dark'}>
+          <Modal.Title>Delete File</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={isDarkMode ? 'bg-dark text-light' : 'bg-white text-dark'}>
+          Are you sure you want to delete <strong>{file.filename}</strong>? This action cannot be undone.
+        </Modal.Body>
+        <Modal.Footer className={isDarkMode ? 'bg-dark border-secondary' : 'bg-white'}>
+          <Button variant="secondary" onClick={handleCloseDeleteModal} disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmDelete} disabled={isDeleting}>
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
@@ -123,6 +176,22 @@ const DashboardPage = () => {
   const [uploadError, setUploadError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState("");
   const [fetchError, setFetchError] = useState("");
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  
+  // Handle file deletion
+  const handleDeleteFile = async (fileId) => {
+    try {
+      await deleteFile(fileId);
+      // Remove the deleted file from the list
+      setUploadedFiles(prevFiles => prevFiles.filter(file => file.fileId !== fileId));
+      setShowDeleteSuccess(true);
+      // Hide success message after 3 seconds
+      setTimeout(() => setShowDeleteSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      setFetchError('Failed to delete the file. Please try again.');
+    }
+  };
 
   // Fetch user's files with retry logic
   const fetchUserFiles = async (retryCount = 0) => {
@@ -294,18 +363,20 @@ const DashboardPage = () => {
                   >
                     <thead>
                       <tr>
-                        <th>File Name</th>
+                        <th>Name</th>
                         <th>Size</th>
                         <th>Type</th>
-                        <th>Uploaded At</th>
+                        <th>Uploaded</th>
+                        <th className="text-end">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {uploadedFiles.map((file, index) => (
                         <FileRow
-                          key={index}
+                          key={file.fileId || index}
                           file={file}
                           isDarkMode={isDarkMode}
+                          onDelete={handleDeleteFile}
                         />
                       ))}
                     </tbody>
