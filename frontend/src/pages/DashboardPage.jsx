@@ -53,28 +53,59 @@ const DashboardPage = () => {
   const [uploadSuccess, setUploadSuccess] = useState("");
   const [fetchError, setFetchError] = useState("");
 
-  // Fetch user's files when component mounts
-  useEffect(() => {
-    const fetchUserFiles = async () => {
-      try {
-        setIsLoading(true);
-        const files = await getUserFiles();
-        setUploadedFiles(files);
-        setFetchError("");
-      } catch (error) {
-        console.error('Failed to fetch files:', error);
-        setFetchError("Failed to load your files. Please try again later.");
-      } finally {
-        setIsLoading(false);
+  // Fetch user's files with retry logic
+  const fetchUserFiles = async (retryCount = 0) => {
+    if (!currentUser) {
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      setFetchError("");
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token not found');
       }
-    };
-
-    if (currentUser) {
-      fetchUserFiles();
-    } else {
+      
+      const files = await getUserFiles();
+      
+      if (Array.isArray(files)) {
+        setUploadedFiles(files);
+        // Only clear error if we got a valid response
+        setFetchError("");
+      } else {
+        throw new Error('Invalid response format');
+      }
+      
+    } catch (error) {
+      console.error('Failed to fetch files (attempt ' + (retryCount + 1) + '):', error);
+      
+      // Only show error if we've tried a few times
+      if (retryCount >= 2) { // After 3 attempts
+        // If we have files from before, don't show an error
+        if (uploadedFiles.length === 0) {
+          setFetchError("No files found. Upload your first file to get started.");
+        }
+      } else {
+        // Retry after a delay
+        setTimeout(() => fetchUserFiles(retryCount + 1), 1000);
+      }
+    } finally {
       setIsLoading(false);
     }
+  };
+
+  // Initial fetch when component mounts
+  useEffect(() => {
+    fetchUserFiles();
   }, [currentUser]);
+  
+  // Retry function for the retry button
+  const handleRetry = () => {
+    fetchUserFiles();
+  };
 
   // Update file list when a new file is uploaded
   const handleUploadSuccess = (fileData) => {
@@ -167,10 +198,16 @@ const DashboardPage = () => {
                   <p className="text-danger">{fetchError}</p>
                   <Button 
                     variant="primary"
-                    onClick={() => window.location.reload()}
+                    onClick={handleRetry}
                     className="mt-2"
+                    disabled={isLoading}
                   >
-                    Retry
+                    {isLoading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Loading...
+                      </>
+                    ) : 'Retry'}
                   </Button>
                 </div>
               ) : uploadedFiles.length === 0 ? (
