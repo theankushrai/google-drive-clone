@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api'; // Added /api to match backend routes
+// API base URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 // Create axios instance with default config
 const api = axios.create({
@@ -19,7 +20,7 @@ api.interceptors.request.use(
     if (config.method === 'options') {
       return config;
     }
-    
+
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -38,7 +39,7 @@ api.interceptors.response.use(
     if (error.response) {
       // Server responded with error status
       console.error('API Error:', error.response.status, error.response.data);
-      
+
       // Handle specific error statuses
       if (error.response.status === 401) {
         // Handle unauthorized (token expired, etc.)
@@ -60,7 +61,7 @@ api.interceptors.response.use(
       // Something happened in setting up the request
       console.error('Request error:', error.message);
     }
-    
+
     // Return a rejected promise with the error
     return Promise.reject(error);
   }
