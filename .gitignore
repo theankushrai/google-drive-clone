@@ -57,3 +57,7 @@ __pycache__/
 /backend/*.pid
 /backend/*.pypackage
 /backend/venv
+/lambda_deploy/*
+!/lambda_deploy/lambda_function.py
+
+/Documentation/ERRORS_AND_SOLUTIONS.md

@@ -78,7 +78,7 @@ export const uploadFile = async (file, onUploadProgress) => {
   formData.append('file', file);
 
   try {
-    const response = await api.post('/files/upload', formData, {
+    const response = await api.post('/files', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         // Don't override the Authorization header here, let the interceptor handle it
@@ -140,7 +140,17 @@ export const getUserFiles = async () => {
 export const getFileDownloadUrl = async (fileId) => {
   try {
     const response = await api.get(`/files/${fileId}`);
-    return response.data;
+    
+    // Ensure we have a valid response with downloadUrl
+    if (!response.data || !response.data.downloadUrl) {
+      throw new Error('Invalid response from server: missing download URL');
+    }
+    
+    // Return the URL and original filename for the download
+    return {
+      url: response.data.downloadUrl,
+      filename: response.data.fileName || 'download'
+    };
   } catch (error) {
     console.error('Error getting download URL:', error);
     throw error;
