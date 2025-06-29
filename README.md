@@ -44,11 +44,18 @@ I wanted to push my full-stack skills to the limit by building a scalable, high-
 ## 🖼 Screenshots
 
 <div align="center">
-  <img src="Documentation\screenshots\loginpage.jpeg" width="80%" alt="Login Preview" />
-  <p><em>Login Page</em></p>
+
+  <img src="Documentation\screenshots\login page light.jpeg" width="80%" alt="Dashboard Page Light Theme" />
+  <p><em>Dashboard Page (Light Theme)</em></p>
+
+  <img src="Documentation\screenshots\dashboard page light.jpeg" width="80%" alt="Dashboard Page Light Theme" />
+  <p><em>Dashboard Page (Light Theme)</em></p>
+  <img src="Documentation\screenshots\loginpage.jpeg" width="80%" alt="Login Page Dark Theme" />
+  <p><em>Login Page (Dark Theme)</em></p>
   
-  <img src="Documentation\screenshots\dashboardpage.jpeg" width="80%" alt="Dashboard Preview" />
-  <p><em>Dashboard Page</em></p>
+  <img src="Documentation\screenshots\dashboardpage.jpeg" width="80%" alt="Dashboard Page Dark Theme" />
+  <p><em>Dashboard Page (Dark Theme)</em></p>
+
 </div>
 
 ## 🚀 How to Run
@@ -86,7 +93,7 @@ I wanted to push my full-stack skills to the limit by building a scalable, high-
 
 Check out the live demo hosted on AWS Amplify: [Live Demo](https://main.d30lhusme6ohqv.amplifyapp.com/)
 
-## 📹 Demo Video 
+## 📹 Demo Video
 
 [![Watch the demo](https://img.youtube.com/vi/buw-2PEJWqA/0.jpg)](https://www.youtube.com/watch?v=buw-2PEJWqA)
 
