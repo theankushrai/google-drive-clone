@@ -1,83 +1,59 @@
-# 🌐 Store Room - A Google Drive Clone 🚀
+# 🎉 Store Room 🚀
 
-A full-stack file storage solution with real-time sync and secure cloud storage
+I decided to take on the challenge of cloning Google Drive just for kicks. Guess what? I did it! 🎉
 
----
+Store Room is a high-performance, full-stack file storage solution built with the latest tech: React, Flask, AWS Amplify, DynamoDB, and S3. It's a passion project that allowed me to push my skills to the limit and create something truly special. Want to know more about how it came to be? Keep reading! 😊
 
-## 📖 Overview
+## 💡 Why I Created It
 
-This project is a **MERN stack** (MongoDB (DynamoDB), Flask, React) application that replicates core Google Drive functionality. It allows users to securely upload, store, manage, and share files with a clean, intuitive interface. Built with modern web technologies and best practices in mind.
+I wanted to push my full-stack skills to the limit by building a scalable, high-performance web application that rivals the best in the industry. I set out to create a real-world, production-ready website that showcases my expertise in full-stack development, DevOps, and cloud computing. I'm now taking it to the next level by containerizing it with Docker and deploying it on AWS EKS, complete with a robust CI/CD pipeline, automated testing, and monitoring. The ultimate goal? To create a world-class application that's fast, secure, and scalable enough to handle massive traffic.
 
----
+## 🎯 What It Can Do
+
+- Securely store and organize your files in the cloud
+- Access your files from any device, anywhere
+- Share files easily with team members
+- Preview documents and images without downloading
+- Manage your files with an intuitive drag-and-drop interface
+
+### 🚀 upcoming features
+
+- Real-time file editing
+- File viewing capabilities
+- Collaboration features for simultaneous file editing
 
 ## ✨ Features
 
-- 🔐 **Secure Authentication**
+- 📂 **File Management**: Drag & drop uploads, file previews, and organization
+- 🔐 **Secure Access**: Firebase Auth with JWT protection
+- 🌓 **Modern UI**: Clean, responsive design with dark/light mode
+- ☁️ **Cloud Storage**: AWS S3 integration for scalable file storage
+- ⚡ **Blazing Fast**: Built with Vite for optimal performance
+- 🔒 **Secure**: End-to-end encryption for your files
+- 🌍 **Accessible**: Works on all devices and screen sizes
 
-  - Email/Password signup & login
-  - Google OAuth integration
-  - Protected routes and JWT-based sessions
+## 🛠 Tech Stack
 
-- ☁️ **File Management**
+- **Frontend**: React 18, Vite, React Bootstrap
+- **Backend**: Python Flask, AWS Lambda
+- **Database**: AWS DynamoDB
+- **Storage**: AWS S3
+- **Authentication**: Firebase Authentication
+- **Deployment**: AWS Amplify
 
-  - Upload multiple files
-  - Preview images and documents
-  - Download files with one click
-  - Delete files securely
-  - Real-time file listing
+## 🖼 Screenshots
 
-- 🎨 **Modern UI/UX**
+<div align="center">
+  <img src="Documentation\screenshots\loginpage.jpeg" width="80%" alt="Login Preview" />
+  <p><em>Login Page</em></p>
+  
+  <img src="Documentation\screenshots\dashboardpage.jpeg" width="80%" alt="Dashboard Preview" />
+  <p><em>Dashboard Page</em></p>
+</div>
 
-  - Responsive design
-  - Drag & drop uploads
-  - File type icons
-  - Progress indicators
-  - Toast notifications
+## 🚀 How to Run
 
-- ⚡ **Performance**
-  - Optimized file uploads
-  - Lazy loading
-  - Efficient state management
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-- ⚛️ React 18 with TypeScript
-- 🔄 React Router v6
-- 🔥 Firebase Authentication
-- 🎨 React Bootstrap & custom CSS
-- 📦 Vite for fast development
-
-### Backend
-
-- 🚀 Flask
-- 🔑 JWT Authentication
-- 📦 AWS S3 for file storage
-- 🗄️ MongoDB with Mongoose
-- 🐳 Docker support
-
-### DevOps
-
-- 🔄 GitHub Actions for CI/CD
-- 📦 Docker containerization
-- 🔒 Environment-based configuration
-- 📊 Logging and monitoring
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Python 3.11+
-- MongoDB Atlas account
-- AWS S3 bucket
-- Firebase project
-
-### Installation
+### Option 1: Run Locally
 
 1. **Clone the repository**
 
@@ -86,104 +62,41 @@ This project is a **MERN stack** (MongoDB (DynamoDB), Flask, React) application 
    cd google-drive-clone
    ```
 
-2. **Install dependencies**
+2. **Set up the backend**
 
    ```bash
-   # Install root dependencies
-   npm install
-
-   # Install frontend dependencies
-   cd frontend
-   npm install
-
-   # Install backend dependencies
-   cd ../backend
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
+   python app.py
    ```
 
-3. **Environment Setup**
-
-   - Copy `.env.example` to `.env` in both frontend and backend
-   - Update with your configuration
-
-4. **Run the application**
+3. **Set up the frontend**
 
    ```bash
-   # Start backend
-   cd backend
-   python app.py
-
-   # In a new terminal, start frontend
-   cd frontend
+   cd ../frontend
+   npm install
    npm run dev
    ```
 
-### Docker Setup
+4. Open `http://localhost:5173` in your browser
 
-```bash
-# Build and run with Docker Compose
-docker-compose up --build
+### Option 2: Try the Live Demo
 
-# Or run in detached mode
-docker-compose up -d
-```
+Check out the live demo hosted on AWS Amplify: [Live Demo](https://main.d30lhusme6ohqv.amplifyapp.com/)
 
----
+## 📹 Demo Video 
 
-## 📸 Screenshots
+[![Watch the demo](https://img.youtube.com/vi/buw-2PEJWqA/0.jpg)](https://www.youtube.com/watch?v=buw-2PEJWqA)
 
-![Login Page](screenshots/login.png)
-_Secure authentication with email/password or Google_
+## 🌐 My Socials
 
-![Dashboard](screenshots/dashboard.png)
-_Clean interface to manage your files_
+Let's connect! Find me on these platforms:
 
-![File Upload](screenshots/upload.png)
-_Drag and drop file uploads with progress_
+- [GitHub](https://github.com/theankushrai)
+- [LinkedIn](https://www.linkedin.com/in/theankushrai/)
+- [Leetcode](https://leetcode.com/u/iamankushrai/)
 
----
-
-## 🎯 Features in Detail
-
-### Authentication
-
-- Secure JWT-based authentication
-- Social login with Google
-- Protected routes
-- Session management
-
-### File Operations
-
-- Upload multiple files
-- Preview images and PDFs
-- Download files
-- Delete files
-- View file details
-
-### User Experience
-
-- Responsive design
-- Loading states
-- Error handling
-- Toast notifications
-
-### Performance
-
-- Optimized file uploads
-- Lazy loading
-- Code splitting
-- Efficient state management
-
----
-
-## 🌐 View My Profiles
-
-Check out more of my work and connect with me online:  
-👉 [https://linktr.ee/your-link](https://linktr.ee/theankushrai)
-
-Includes:
-
-- GitHub
-- LeetCode
-- GeeksForGeeks
-- LinkedIn
+Or visit my Linktree for all my links in one place:  
+👉 [https://linktr.ee/theankushrai](https://linktr.ee/theankushrai)
