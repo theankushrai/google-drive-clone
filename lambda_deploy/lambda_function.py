@@ -312,7 +312,11 @@ def handle_file_upload(event, headers):
             ContentType=file_type
         )
         
-        # Save metadata to DynamoDB
+        # Calculate TTL (1 day from now in seconds since epoch)
+        ttl_days = 1  # Set TTL to 1 day
+        ttl_timestamp = int((datetime.utcnow().timestamp() + (ttl_days * 24 * 60 * 60)))
+        
+        # Save metadata to DynamoDB with TTL
         item = {
             'fileId': file_id,
             'userId': user_id,
@@ -320,7 +324,8 @@ def handle_file_upload(event, headers):
             'fileKey': file_key,
             'fileType': file_type,
             'fileSize': len(file_data),
-            'uploadDate': datetime.utcnow().isoformat()
+            'uploadDate': datetime.utcnow().isoformat(),
+            'expiresAt': ttl_timestamp  # TTL attribute for DynamoDB
         }
         table.put_item(Item=item)
         

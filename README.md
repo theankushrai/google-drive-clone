@@ -30,6 +30,7 @@ I wanted to push my full-stack skills to the limit by building a scalable, high-
 - ☁️ **Cloud Storage**: AWS S3 integration for scalable file storage
 - ⚡ **Blazing Fast**: Built with Vite for optimal performance
 - 🔒 **Secure**: End-to-end encryption for your files
+- 🕒 **Auto-Expiry**: Files automatically expire after 30 days (configurable)
 - 🌍 **Accessible**: Works on all devices and screen sizes
 
 ## 🛠 Tech Stack
